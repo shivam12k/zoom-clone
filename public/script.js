@@ -6,7 +6,7 @@ myVideo.muted = true;
 
 console.log(videoGrid);
 
-var peer = new Peer(undefined, {
+const peer = new Peer(undefined, {
     path: '/peerjs',
     host: '/',
     port: '3030'
@@ -25,12 +25,12 @@ navigator.mediaDevices.getUserMedia({
 
     peer.on('call', call => {
         call.answer(stream)
-        const video = document.createElement('video')
-        call.On('stream', userVideoStream => {
-            addVideoStream(video, userVideoStream);
-        })
+        // const video = document.createElement('video')
+        // call.on('stream', userVideoStream => {
+        //     addVideoStream(video, userVideoStream);
+        // })
     })
-   
+
     socket.on('user-connected', (userId, stream) => {
         connectToNewUser(userId, stream);
     })
@@ -44,25 +44,33 @@ navigator.mediaDevices.getUserMedia({
 peer.on('open', id => {
 
     socket.emit('join-room', ROOM_ID, id);
+   
 })
 
 const connectToNewUser = (userId, stream) => {
     // console.log("new user is connected of user id", userId);
-
+     console.log("stream", stream)
     const call = peer.call(userId, stream)
     const video = document.createElement('video')
-    call.on('stream', userVideoStream => {
+  
+     call.on('stream', userVideoStream => {
+         console.log("calling")
         addVideoStream(video, userVideoStream);
     })
 
+    call.on('close', () => {
+        console.log("video remove")
+        video.remove()
+    })
 }
 
 // function which render  video
 const addVideoStream = (video, stream) => {
+    console.log("video stream")
     video.srcObject = stream;
     video.addEventListener('loadedmetadata', () => {
         video.play();
-        
+
     })
     videoGrid.append(video);
 }
