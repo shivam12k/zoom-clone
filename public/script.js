@@ -22,12 +22,11 @@ navigator.mediaDevices.getUserMedia({
       addVideoStream(video, userVideoStream)
     })
   })
-
-  socket.on('user-connected', userId => {
-    connectToNewUser(userId, myVideoStream)
-  })
 })
 
+socket.on('user-connected', userId => {
+  connectToNewUser(userId, myVideoStream)
+})
 
 myPeer.on('open', id => {
   socket.emit('join-room', ROOM_ID, id)
